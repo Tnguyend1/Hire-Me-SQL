@@ -50,3 +50,11 @@ app.*.map.json
 # Gradle/Android caches accidentally created at repo root (can be ~2GB)
 /caches/
 android/.gradle/
+
+# Gradle/Kotlin tooling accidentally created under repo root (not source code)
+/daemon/
+/kotlin-profile/
+/native/
+
+# Junk / local test artifacts
+android/FakeDependency.jar
