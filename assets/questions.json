@@ -1,0 +1,3337 @@
+[
+  {
+    "id": "q1",
+    "title": "Customers With No Orders",
+    "topic": "JOIN",
+    "company": "Shopify",
+    "difficulty": "Easy",
+    "xp": 20,
+    "statement": "Find the customer_id of customers who never placed an order.",
+    "hint": "Use a LEFT JOIN from customers to orders, then filter rows with no matching order.",
+    "explanation": "A LEFT JOIN keeps all customers. Customers without a matching order will have NULL values on the orders side.",
+    "concepts": [
+      "LEFT JOIN",
+      "NULL"
+    ],
+    "acceptedAnswers": [
+      "SELECT c.customer_id FROM customers c LEFT JOIN orders o ON c.customer_id = o.customer_id WHERE o.order_id IS NULL"
+    ],
+    "requiredKeywords": [
+      "left join",
+      "null"
+    ],
+    "schema": [
+      "CREATE TABLE customers (customer_id INTEGER, customer_name TEXT);",
+      "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER, order_date TEXT);"
+    ],
+    "sampleData": {
+      "customers": [
+        {
+          "customer_id": 1,
+          "customer_name": "Alice"
+        },
+        {
+          "customer_id": 2,
+          "customer_name": "Bob"
+        },
+        {
+          "customer_id": 3,
+          "customer_name": "Carol"
+        }
+      ],
+      "orders": [
+        {
+          "order_id": 101,
+          "customer_id": 1,
+          "order_date": "2024-01-10"
+        },
+        {
+          "order_id": 102,
+          "customer_id": 1,
+          "order_date": "2024-01-11"
+        },
+        {
+          "order_id": 103,
+          "customer_id": 2,
+          "order_date": "2024-01-15"
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "customer_id": 3
+      }
+    ]
+  },
+  {
+    "id": "q2",
+    "title": "Top 3 Products by Revenue",
+    "topic": "JOIN",
+    "company": "Amazon",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Find the top 3 products by total revenue. Output product_name and revenue, ordered by revenue descending.",
+    "hint": "Join products and sales, aggregate quantity * price, then sort and limit.",
+    "explanation": "Revenue is quantity multiplied by price. After joining the two tables, group by product and sum revenue.",
+    "concepts": [
+      "JOIN",
+      "SUM",
+      "GROUP BY",
+      "ORDER BY",
+      "LIMIT"
+    ],
+    "acceptedAnswers": [
+      "SELECT p.product_name, SUM(s.quantity * s.price) AS revenue FROM products p JOIN sales s ON p.product_id = s.product_id GROUP BY p.product_name ORDER BY revenue DESC LIMIT 3"
+    ],
+    "requiredKeywords": [
+      "join",
+      "sum",
+      "group by",
+      "order by",
+      "limit"
+    ],
+    "schema": [
+      "CREATE TABLE products (product_id INTEGER, product_name TEXT);",
+      "CREATE TABLE sales (sale_id INTEGER, product_id INTEGER, quantity INTEGER, price INTEGER);"
+    ],
+    "sampleData": {
+      "products": [
+        {
+          "product_id": 1,
+          "product_name": "Keyboard"
+        },
+        {
+          "product_id": 2,
+          "product_name": "Mouse"
+        },
+        {
+          "product_id": 3,
+          "product_name": "Monitor"
+        },
+        {
+          "product_id": 4,
+          "product_name": "Headset"
+        }
+      ],
+      "sales": [
+        {
+          "sale_id": 1,
+          "product_id": 1,
+          "quantity": 2,
+          "price": 50
+        },
+        {
+          "sale_id": 2,
+          "product_id": 2,
+          "quantity": 5,
+          "price": 20
+        },
+        {
+          "sale_id": 3,
+          "product_id": 3,
+          "quantity": 3,
+          "price": 200
+        },
+        {
+          "sale_id": 4,
+          "product_id": 4,
+          "quantity": 4,
+          "price": 80
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "product_name": "Monitor",
+        "revenue": 600
+      },
+      {
+        "product_name": "Headset",
+        "revenue": 320
+      },
+      {
+        "product_name": "Keyboard",
+        "revenue": 100
+      }
+    ]
+  },
+  {
+    "id": "q3",
+    "title": "Average Order Value",
+    "topic": "Aggregation",
+    "company": "Instacart",
+    "difficulty": "Easy",
+    "xp": 20,
+    "statement": "Find the average order value from the orders table.",
+    "hint": "Use AVG on total_amount.",
+    "explanation": "AVG computes the mean across all rows in total_amount.",
+    "concepts": [
+      "AVG"
+    ],
+    "acceptedAnswers": [
+      "SELECT ROUND(AVG(total_amount), 2) AS avg_order_value FROM orders"
+    ],
+    "requiredKeywords": [
+      "avg"
+    ],
+    "schema": [
+      "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER, total_amount REAL);"
+    ],
+    "sampleData": {
+      "orders": [
+        {
+          "order_id": 1,
+          "customer_id": 101,
+          "total_amount": 40
+        },
+        {
+          "order_id": 2,
+          "customer_id": 102,
+          "total_amount": 60
+        },
+        {
+          "order_id": 3,
+          "customer_id": 103,
+          "total_amount": 100
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "avg_order_value": 66.67
+      }
+    ]
+  },
+  {
+    "id": "q4",
+    "title": "Monthly Active Users",
+    "topic": "Aggregation",
+    "company": "Meta",
+    "difficulty": "Easy",
+    "xp": 20,
+    "statement": "Count unique users per month in 2024. Output month and active_users ordered by month.",
+    "hint": "Group by the first day of each month and count distinct user_id.",
+    "explanation": "In SQLite, use date(created_at, 'start of month') to normalize each event date to the first day of its month, then group and count distinct users.",
+    "concepts": [
+      "GROUP BY",
+      "COUNT DISTINCT"
+    ],
+    "acceptedAnswers": [
+      "SELECT date(created_at, 'start of month') AS month, COUNT(DISTINCT user_id) AS active_users FROM events WHERE created_at >= '2024-01-01' AND created_at < '2025-01-01' GROUP BY date(created_at, 'start of month') ORDER BY month"
+    ],
+    "requiredKeywords": [
+      "count",
+      "distinct",
+      "group by"
+    ],
+    "schema": [
+      "CREATE TABLE events (event_id INTEGER, user_id INTEGER, created_at TEXT);"
+    ],
+    "sampleData": {
+      "events": [
+        {
+          "event_id": 1,
+          "user_id": 1,
+          "created_at": "2024-01-05"
+        },
+        {
+          "event_id": 2,
+          "user_id": 2,
+          "created_at": "2024-01-10"
+        },
+        {
+          "event_id": 3,
+          "user_id": 1,
+          "created_at": "2024-01-15"
+        },
+        {
+          "event_id": 4,
+          "user_id": 3,
+          "created_at": "2024-02-01"
+        },
+        {
+          "event_id": 5,
+          "user_id": 1,
+          "created_at": "2024-02-10"
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "month": "2024-01-01",
+        "active_users": 2
+      },
+      {
+        "month": "2024-02-01",
+        "active_users": 2
+      }
+    ]
+  },
+  {
+    "id": "q5",
+    "title": "Customers With More Than 2 Orders",
+    "topic": "Aggregation",
+    "company": "DoorDash",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Find customer_id values for customers who placed more than 2 orders.",
+    "hint": "Group by customer_id and use HAVING.",
+    "explanation": "COUNT gives orders per customer, and HAVING filters aggregated groups.",
+    "concepts": [
+      "COUNT",
+      "GROUP BY",
+      "HAVING"
+    ],
+    "acceptedAnswers": [
+      "SELECT customer_id FROM orders GROUP BY customer_id HAVING COUNT(*) > 2"
+    ],
+    "requiredKeywords": [
+      "group by",
+      "having",
+      "count"
+    ],
+    "schema": [
+      "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER);"
+    ],
+    "sampleData": {
+      "orders": [
+        {
+          "order_id": 1,
+          "customer_id": 10
+        },
+        {
+          "order_id": 2,
+          "customer_id": 10
+        },
+        {
+          "order_id": 3,
+          "customer_id": 10
+        },
+        {
+          "order_id": 4,
+          "customer_id": 20
+        },
+        {
+          "order_id": 5,
+          "customer_id": 20
+        },
+        {
+          "order_id": 6,
+          "customer_id": 30
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "customer_id": 10
+      }
+    ]
+  },
+  {
+    "id": "q6",
+    "title": "Latest Order Per Customer",
+    "topic": "JOIN",
+    "company": "Uber",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "For each customer, return their latest order_date.",
+    "hint": "Group by customer_id and use MAX(order_date).",
+    "explanation": "MAX on order_date finds the most recent order in each customer group.",
+    "concepts": [
+      "MAX",
+      "GROUP BY"
+    ],
+    "acceptedAnswers": [
+      "SELECT customer_id, MAX(order_date) AS latest_order_date FROM orders GROUP BY customer_id"
+    ],
+    "requiredKeywords": [
+      "max",
+      "group by"
+    ],
+    "schema": [
+      "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER, order_date TEXT);"
+    ],
+    "sampleData": {
+      "orders": [
+        {
+          "order_id": 1,
+          "customer_id": 1,
+          "order_date": "2024-01-01"
+        },
+        {
+          "order_id": 2,
+          "customer_id": 1,
+          "order_date": "2024-02-05"
+        },
+        {
+          "order_id": 3,
+          "customer_id": 2,
+          "order_date": "2024-01-15"
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "customer_id": 1,
+        "latest_order_date": "2024-02-05"
+      },
+      {
+        "customer_id": 2,
+        "latest_order_date": "2024-01-15"
+      }
+    ]
+  },
+  {
+    "id": "q7",
+    "title": "Second Highest Salary",
+    "topic": "Subquery",
+    "company": "Google",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Find the second highest distinct salary from the employees table.",
+    "hint": "Use MAX in a subquery to exclude the highest salary first.",
+    "explanation": "First find the maximum salary, then find the maximum salary smaller than that value.",
+    "concepts": [
+      "SUBQUERY",
+      "MAX",
+      "DISTINCT"
+    ],
+    "acceptedAnswers": [
+      "SELECT MAX(salary) AS second_highest_salary FROM employees WHERE salary < (SELECT MAX(salary) FROM employees)"
+    ],
+    "requiredKeywords": [
+      "select",
+      "max"
+    ],
+    "schema": [
+      "CREATE TABLE employees (employee_id INTEGER, employee_name TEXT, salary INTEGER);"
+    ],
+    "sampleData": {
+      "employees": [
+        {
+          "employee_id": 1,
+          "employee_name": "Alice",
+          "salary": 120000
+        },
+        {
+          "employee_id": 2,
+          "employee_name": "Bob",
+          "salary": 100000
+        },
+        {
+          "employee_id": 3,
+          "employee_name": "Carol",
+          "salary": 120000
+        },
+        {
+          "employee_id": 4,
+          "employee_name": "David",
+          "salary": 90000
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "second_highest_salary": 100000
+      }
+    ]
+  },
+  {
+    "id": "q8",
+    "title": "Employees Above Department Average",
+    "topic": "Subquery",
+    "company": "Amazon",
+    "difficulty": "Hard",
+    "xp": 40,
+    "statement": "Find employee_name values for employees whose salary is greater than the average salary of their department.",
+    "hint": "Use a correlated subquery on department.",
+    "explanation": "A correlated subquery can compute the average salary within the current employee's department and compare each employee against it.",
+    "concepts": [
+      "CORRELATED SUBQUERY",
+      "AVG",
+      "WHERE"
+    ],
+    "acceptedAnswers": [
+      "SELECT e1.employee_name FROM employees e1 WHERE e1.salary > (SELECT AVG(e2.salary) FROM employees e2 WHERE e2.department = e1.department)"
+    ],
+    "requiredKeywords": [
+      "select",
+      "avg",
+      "where"
+    ],
+    "schema": [
+      "CREATE TABLE employees (employee_id INTEGER, employee_name TEXT, department TEXT, salary INTEGER);"
+    ],
+    "sampleData": {
+      "employees": [
+        {
+          "employee_id": 1,
+          "employee_name": "Alice",
+          "department": "Engineering",
+          "salary": 120000
+        },
+        {
+          "employee_id": 2,
+          "employee_name": "Bob",
+          "department": "Engineering",
+          "salary": 90000
+        },
+        {
+          "employee_id": 3,
+          "employee_name": "Carol",
+          "department": "HR",
+          "salary": 80000
+        },
+        {
+          "employee_id": 4,
+          "employee_name": "David",
+          "department": "HR",
+          "salary": 70000
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "employee_name": "Alice"
+      },
+      {
+        "employee_name": "Carol"
+      }
+    ]
+  },
+  {
+    "id": "q9",
+    "title": "Running Total of Daily Sales",
+    "topic": "Window Function",
+    "company": "Shopify",
+    "difficulty": "Hard",
+    "xp": 40,
+    "statement": "For each sale_date, return sale_date, amount, and running_total ordered by sale_date.",
+    "hint": "Use SUM(amount) OVER with ORDER BY sale_date.",
+    "explanation": "A window function can accumulate values row by row without collapsing the result into grouped rows.",
+    "concepts": [
+      "WINDOW FUNCTION",
+      "SUM OVER",
+      "ORDER BY"
+    ],
+    "acceptedAnswers": [
+      "SELECT sale_date, amount, SUM(amount) OVER (ORDER BY sale_date) AS running_total FROM sales ORDER BY sale_date"
+    ],
+    "requiredKeywords": [
+      "sum",
+      "over",
+      "order by"
+    ],
+    "schema": [
+      "CREATE TABLE sales (sale_id INTEGER, sale_date TEXT, amount INTEGER);"
+    ],
+    "sampleData": {
+      "sales": [
+        {
+          "sale_id": 1,
+          "sale_date": "2024-01-01",
+          "amount": 100
+        },
+        {
+          "sale_id": 2,
+          "sale_date": "2024-01-02",
+          "amount": 150
+        },
+        {
+          "sale_id": 3,
+          "sale_date": "2024-01-03",
+          "amount": 200
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "sale_date": "2024-01-01",
+        "amount": 100,
+        "running_total": 100
+      },
+      {
+        "sale_date": "2024-01-02",
+        "amount": 150,
+        "running_total": 250
+      },
+      {
+        "sale_date": "2024-01-03",
+        "amount": 200,
+        "running_total": 450
+      }
+    ]
+  },
+  {
+    "id": "q10",
+    "title": "Top Seller Per Category",
+    "topic": "Window Function",
+    "company": "Etsy",
+    "difficulty": "Hard",
+    "xp": 40,
+    "statement": "Return the top-selling product_name in each category based on total_units.",
+    "hint": "Use ROW_NUMBER partitioned by category ordered by total_units descending.",
+    "explanation": "ROW_NUMBER can rank products within each category, and then you can keep only rank 1.",
+    "concepts": [
+      "ROW_NUMBER",
+      "PARTITION BY",
+      "CTE"
+    ],
+    "acceptedAnswers": [
+      "WITH ranked AS (SELECT category, product_name, total_units, ROW_NUMBER() OVER (PARTITION BY category ORDER BY total_units DESC) AS rn FROM product_sales) SELECT category, product_name, total_units FROM ranked WHERE rn = 1"
+    ],
+    "requiredKeywords": [
+      "row_number",
+      "over",
+      "partition by"
+    ],
+    "schema": [
+      "CREATE TABLE product_sales (product_id INTEGER, product_name TEXT, category TEXT, total_units INTEGER);"
+    ],
+    "sampleData": {
+      "product_sales": [
+        {
+          "product_id": 1,
+          "product_name": "Notebook",
+          "category": "Stationery",
+          "total_units": 120
+        },
+        {
+          "product_id": 2,
+          "product_name": "Pen",
+          "category": "Stationery",
+          "total_units": 200
+        },
+        {
+          "product_id": 3,
+          "product_name": "Mug",
+          "category": "Home",
+          "total_units": 90
+        },
+        {
+          "product_id": 4,
+          "product_name": "Plate",
+          "category": "Home",
+          "total_units": 150
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "category": "Home",
+        "product_name": "Plate",
+        "total_units": 150
+      },
+      {
+        "category": "Stationery",
+        "product_name": "Pen",
+        "total_units": 200
+      }
+    ]
+  },
+  {
+    "id": "q11",
+    "title": "Orders Without Delivery",
+    "topic": "JOIN",
+    "company": "DoorDash",
+    "difficulty": "Easy",
+    "xp": 20,
+    "statement": "Find order_id values for orders that do not have a matching delivery record.",
+    "hint": "Use a LEFT JOIN from orders to deliveries and filter NULLs on the deliveries side.",
+    "explanation": "A LEFT JOIN preserves all orders. Orders without a matching delivery will have NULL values in the delivery columns.",
+    "concepts": [
+      "LEFT JOIN",
+      "NULL"
+    ],
+    "acceptedAnswers": [
+      "SELECT o.order_id FROM orders o LEFT JOIN deliveries d ON o.order_id = d.order_id WHERE d.delivery_id IS NULL"
+    ],
+    "requiredKeywords": [
+      "left join",
+      "null"
+    ],
+    "schema": [
+      "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER);",
+      "CREATE TABLE deliveries (delivery_id INTEGER, order_id INTEGER, delivered_at TEXT);"
+    ],
+    "sampleData": {
+      "orders": [
+        {
+          "order_id": 1,
+          "customer_id": 10
+        },
+        {
+          "order_id": 2,
+          "customer_id": 20
+        },
+        {
+          "order_id": 3,
+          "customer_id": 30
+        }
+      ],
+      "deliveries": [
+        {
+          "delivery_id": 101,
+          "order_id": 1,
+          "delivered_at": "2024-01-01"
+        },
+        {
+          "delivery_id": 102,
+          "order_id": 3,
+          "delivered_at": "2024-01-02"
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "order_id": 2
+      }
+    ]
+  },
+  {
+    "id": "q12",
+    "title": "Users With 3 Or More Sessions",
+    "topic": "Aggregation",
+    "company": "Meta",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Find user_id values for users with at least 3 sessions.",
+    "hint": "Group by user_id and use HAVING COUNT(*) >= 3.",
+    "explanation": "COUNT aggregates the number of sessions per user, and HAVING filters the grouped results.",
+    "concepts": [
+      "COUNT",
+      "GROUP BY",
+      "HAVING"
+    ],
+    "acceptedAnswers": [
+      "SELECT user_id FROM sessions GROUP BY user_id HAVING COUNT(*) >= 3"
+    ],
+    "requiredKeywords": [
+      "group by",
+      "having",
+      "count"
+    ],
+    "schema": [
+      "CREATE TABLE sessions (session_id INTEGER, user_id INTEGER, started_at TEXT);"
+    ],
+    "sampleData": {
+      "sessions": [
+        {
+          "session_id": 1,
+          "user_id": 1,
+          "started_at": "2024-01-01"
+        },
+        {
+          "session_id": 2,
+          "user_id": 1,
+          "started_at": "2024-01-02"
+        },
+        {
+          "session_id": 3,
+          "user_id": 1,
+          "started_at": "2024-01-03"
+        },
+        {
+          "session_id": 4,
+          "user_id": 2,
+          "started_at": "2024-01-01"
+        },
+        {
+          "session_id": 5,
+          "user_id": 2,
+          "started_at": "2024-01-05"
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "user_id": 1
+      }
+    ]
+  },
+  {
+    "id": "q13",
+    "title": "First Order Date Per Customer",
+    "topic": "Aggregation",
+    "company": "Uber",
+    "difficulty": "Easy",
+    "xp": 20,
+    "statement": "For each customer, return customer_id and first_order_date.",
+    "hint": "Group by customer_id and use MIN(order_date).",
+    "explanation": "MIN on order_date gives the earliest order for each customer.",
+    "concepts": [
+      "MIN",
+      "GROUP BY"
+    ],
+    "acceptedAnswers": [
+      "SELECT customer_id, MIN(order_date) AS first_order_date FROM orders GROUP BY customer_id"
+    ],
+    "requiredKeywords": [
+      "min",
+      "group by"
+    ],
+    "schema": [
+      "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER, order_date TEXT);"
+    ],
+    "sampleData": {
+      "orders": [
+        {
+          "order_id": 1,
+          "customer_id": 1,
+          "order_date": "2024-02-05"
+        },
+        {
+          "order_id": 2,
+          "customer_id": 1,
+          "order_date": "2024-01-01"
+        },
+        {
+          "order_id": 3,
+          "customer_id": 2,
+          "order_date": "2024-01-15"
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "customer_id": 1,
+        "first_order_date": "2024-01-01"
+      },
+      {
+        "customer_id": 2,
+        "first_order_date": "2024-01-15"
+      }
+    ]
+  },
+  {
+    "id": "q14",
+    "title": "Customers Who Ordered Every Month",
+    "topic": "Subquery",
+    "company": "Instacart",
+    "difficulty": "Hard",
+    "xp": 40,
+    "statement": "Find customer_id values for customers who placed at least one order in every month present in the dataset.",
+    "hint": "Count distinct months per customer and compare it to the total distinct months in the table.",
+    "explanation": "A subquery can compute the number of distinct months overall, while the outer query checks which customers match that count.",
+    "concepts": [
+      "SUBQUERY",
+      "COUNT DISTINCT",
+      "GROUP BY",
+      "HAVING"
+    ],
+    "acceptedAnswers": [
+      "SELECT customer_id FROM orders GROUP BY customer_id HAVING COUNT(DISTINCT strftime('%Y-%m', order_date)) = (SELECT COUNT(DISTINCT strftime('%Y-%m', order_date)) FROM orders)"
+    ],
+    "requiredKeywords": [
+      "group by",
+      "having",
+      "count",
+      "distinct"
+    ],
+    "schema": [
+      "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER, order_date TEXT);"
+    ],
+    "sampleData": {
+      "orders": [
+        {
+          "order_id": 1,
+          "customer_id": 1,
+          "order_date": "2024-01-10"
+        },
+        {
+          "order_id": 2,
+          "customer_id": 1,
+          "order_date": "2024-02-12"
+        },
+        {
+          "order_id": 3,
+          "customer_id": 1,
+          "order_date": "2024-03-01"
+        },
+        {
+          "order_id": 4,
+          "customer_id": 2,
+          "order_date": "2024-01-05"
+        },
+        {
+          "order_id": 5,
+          "customer_id": 2,
+          "order_date": "2024-03-20"
+        },
+        {
+          "order_id": 6,
+          "customer_id": 3,
+          "order_date": "2024-01-01"
+        },
+        {
+          "order_id": 7,
+          "customer_id": 3,
+          "order_date": "2024-02-01"
+        },
+        {
+          "order_id": 8,
+          "customer_id": 3,
+          "order_date": "2024-03-01"
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "customer_id": 1
+      },
+      {
+        "customer_id": 3
+      }
+    ]
+  },
+  {
+    "id": "q15",
+    "title": "Products Never Sold",
+    "topic": "JOIN",
+    "company": "Etsy",
+    "difficulty": "Easy",
+    "xp": 20,
+    "statement": "Find the product_name of products that have never appeared in the sales table.",
+    "hint": "Use a LEFT JOIN from products to sales, then keep rows with no matching sale.",
+    "explanation": "A LEFT JOIN keeps all products. Unsold products will have NULL values from the sales table.",
+    "concepts": [
+      "LEFT JOIN",
+      "NULL"
+    ],
+    "acceptedAnswers": [
+      "SELECT p.product_name FROM products p LEFT JOIN sales s ON p.product_id = s.product_id WHERE s.sale_id IS NULL"
+    ],
+    "requiredKeywords": [
+      "left join",
+      "null"
+    ],
+    "schema": [
+      "CREATE TABLE products (product_id INTEGER, product_name TEXT);",
+      "CREATE TABLE sales (sale_id INTEGER, product_id INTEGER, quantity INTEGER);"
+    ],
+    "sampleData": {
+      "products": [
+        {
+          "product_id": 1,
+          "product_name": "Notebook"
+        },
+        {
+          "product_id": 2,
+          "product_name": "Pen"
+        },
+        {
+          "product_id": 3,
+          "product_name": "Marker"
+        }
+      ],
+      "sales": [
+        {
+          "sale_id": 1,
+          "product_id": 1,
+          "quantity": 3
+        },
+        {
+          "sale_id": 2,
+          "product_id": 2,
+          "quantity": 5
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "product_name": "Marker"
+      }
+    ]
+  },
+  {
+    "id": "q16",
+    "title": "Orders With Customer Names",
+    "topic": "JOIN",
+    "company": "Uber",
+    "difficulty": "Easy",
+    "xp": 20,
+    "statement": "Return order_id and customer_name for each order.",
+    "hint": "Join orders to customers using customer_id.",
+    "explanation": "An INNER JOIN combines order rows with the matching customer row.",
+    "concepts": [
+      "INNER JOIN"
+    ],
+    "acceptedAnswers": [
+      "SELECT o.order_id, c.customer_name FROM orders o JOIN customers c ON o.customer_id = c.customer_id"
+    ],
+    "requiredKeywords": [
+      "join"
+    ],
+    "schema": [
+      "CREATE TABLE customers (customer_id INTEGER, customer_name TEXT);",
+      "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER);"
+    ],
+    "sampleData": {
+      "customers": [
+        {
+          "customer_id": 1,
+          "customer_name": "Alice"
+        },
+        {
+          "customer_id": 2,
+          "customer_name": "Bob"
+        }
+      ],
+      "orders": [
+        {
+          "order_id": 101,
+          "customer_id": 1
+        },
+        {
+          "order_id": 102,
+          "customer_id": 2
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "order_id": 101,
+        "customer_name": "Alice"
+      },
+      {
+        "order_id": 102,
+        "customer_name": "Bob"
+      }
+    ]
+  },
+  {
+    "id": "q17",
+    "title": "Employees and Their Managers",
+    "topic": "JOIN",
+    "company": "Google",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Return employee_name and manager_name for employees who have a manager.",
+    "hint": "Use a self join on employees where manager_id matches employee_id.",
+    "explanation": "A self join lets one copy of the employees table represent workers and the other represent their managers.",
+    "concepts": [
+      "SELF JOIN"
+    ],
+    "acceptedAnswers": [
+      "SELECT e.employee_name, m.employee_name AS manager_name FROM employees e JOIN employees m ON e.manager_id = m.employee_id"
+    ],
+    "requiredKeywords": [
+      "join"
+    ],
+    "schema": [
+      "CREATE TABLE employees (employee_id INTEGER, employee_name TEXT, manager_id INTEGER);"
+    ],
+    "sampleData": {
+      "employees": [
+        {
+          "employee_id": 1,
+          "employee_name": "Alice",
+          "manager_id": null
+        },
+        {
+          "employee_id": 2,
+          "employee_name": "Bob",
+          "manager_id": 1
+        },
+        {
+          "employee_id": 3,
+          "employee_name": "Carol",
+          "manager_id": 1
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "employee_name": "Bob",
+        "manager_name": "Alice"
+      },
+      {
+        "employee_name": "Carol",
+        "manager_name": "Alice"
+      }
+    ]
+  },
+  {
+    "id": "q18",
+    "title": "Customers With Total Spend Over 100",
+    "topic": "JOIN",
+    "company": "DoorDash",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Find customer_name and total_spend for customers whose total spend is greater than 100.",
+    "hint": "Join customers and orders, group by customer, sum amount, then filter with HAVING.",
+    "explanation": "After joining orders to customers, aggregate order amounts per customer and use HAVING to keep totals above 100.",
+    "concepts": [
+      "JOIN",
+      "SUM",
+      "GROUP BY",
+      "HAVING"
+    ],
+    "acceptedAnswers": [
+      "SELECT c.customer_name, SUM(o.amount) AS total_spend FROM customers c JOIN orders o ON c.customer_id = o.customer_id GROUP BY c.customer_id, c.customer_name HAVING SUM(o.amount) > 100"
+    ],
+    "requiredKeywords": [
+      "join",
+      "sum",
+      "group by",
+      "having"
+    ],
+    "schema": [
+      "CREATE TABLE customers (customer_id INTEGER, customer_name TEXT);",
+      "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER, amount INTEGER);"
+    ],
+    "sampleData": {
+      "customers": [
+        {
+          "customer_id": 1,
+          "customer_name": "Alice"
+        },
+        {
+          "customer_id": 2,
+          "customer_name": "Bob"
+        },
+        {
+          "customer_id": 3,
+          "customer_name": "Carol"
+        }
+      ],
+      "orders": [
+        {
+          "order_id": 1,
+          "customer_id": 1,
+          "amount": 70
+        },
+        {
+          "order_id": 2,
+          "customer_id": 1,
+          "amount": 50
+        },
+        {
+          "order_id": 3,
+          "customer_id": 2,
+          "amount": 40
+        },
+        {
+          "order_id": 4,
+          "customer_id": 3,
+          "amount": 120
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "customer_name": "Alice",
+        "total_spend": 120
+      },
+      {
+        "customer_name": "Carol",
+        "total_spend": 120
+      }
+    ]
+  },
+  {
+    "id": "q19",
+    "title": "Daily Revenue",
+    "topic": "Aggregation",
+    "company": "Shopify",
+    "difficulty": "Easy",
+    "xp": 20,
+    "statement": "For each sale_date, return sale_date and revenue ordered by sale_date.",
+    "hint": "Group by sale_date and sum amount.",
+    "explanation": "SUM adds all sale amounts for the same date.",
+    "concepts": [
+      "SUM",
+      "GROUP BY"
+    ],
+    "acceptedAnswers": [
+      "SELECT sale_date, SUM(amount) AS revenue FROM sales GROUP BY sale_date ORDER BY sale_date"
+    ],
+    "requiredKeywords": [
+      "sum",
+      "group by"
+    ],
+    "schema": [
+      "CREATE TABLE sales (sale_id INTEGER, sale_date TEXT, amount INTEGER);"
+    ],
+    "sampleData": {
+      "sales": [
+        {
+          "sale_id": 1,
+          "sale_date": "2024-01-01",
+          "amount": 100
+        },
+        {
+          "sale_id": 2,
+          "sale_date": "2024-01-01",
+          "amount": 60
+        },
+        {
+          "sale_id": 3,
+          "sale_date": "2024-01-02",
+          "amount": 80
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "sale_date": "2024-01-01",
+        "revenue": 160
+      },
+      {
+        "sale_date": "2024-01-02",
+        "revenue": 80
+      }
+    ]
+  },
+  {
+    "id": "q20",
+    "title": "Distinct Products Sold Per Day",
+    "topic": "Aggregation",
+    "company": "Amazon",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "For each sale_date, return the number of distinct products sold as distinct_products ordered by sale_date.",
+    "hint": "Use COUNT(DISTINCT product_id) grouped by sale_date.",
+    "explanation": "COUNT(DISTINCT ...) counts unique products sold each day.",
+    "concepts": [
+      "COUNT DISTINCT",
+      "GROUP BY"
+    ],
+    "acceptedAnswers": [
+      "SELECT sale_date, COUNT(DISTINCT product_id) AS distinct_products FROM sales GROUP BY sale_date ORDER BY sale_date"
+    ],
+    "requiredKeywords": [
+      "count",
+      "distinct",
+      "group by"
+    ],
+    "schema": [
+      "CREATE TABLE sales (sale_id INTEGER, sale_date TEXT, product_id INTEGER);"
+    ],
+    "sampleData": {
+      "sales": [
+        {
+          "sale_id": 1,
+          "sale_date": "2024-01-01",
+          "product_id": 1
+        },
+        {
+          "sale_id": 2,
+          "sale_date": "2024-01-01",
+          "product_id": 1
+        },
+        {
+          "sale_id": 3,
+          "sale_date": "2024-01-01",
+          "product_id": 2
+        },
+        {
+          "sale_id": 4,
+          "sale_date": "2024-01-02",
+          "product_id": 2
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "sale_date": "2024-01-01",
+        "distinct_products": 2
+      },
+      {
+        "sale_date": "2024-01-02",
+        "distinct_products": 1
+      }
+    ]
+  },
+  {
+    "id": "q21",
+    "title": "Average Rating Per Product",
+    "topic": "Aggregation",
+    "company": "Airbnb",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Return product_id and avg_rating rounded to 2 decimals, ordered by product_id.",
+    "hint": "Group by product_id and use ROUND(AVG(rating), 2).",
+    "explanation": "AVG computes each product's mean rating, and ROUND formats the result consistently.",
+    "concepts": [
+      "AVG",
+      "ROUND",
+      "GROUP BY"
+    ],
+    "acceptedAnswers": [
+      "SELECT product_id, ROUND(AVG(rating), 2) AS avg_rating FROM reviews GROUP BY product_id ORDER BY product_id"
+    ],
+    "requiredKeywords": [
+      "avg",
+      "group by"
+    ],
+    "schema": [
+      "CREATE TABLE reviews (review_id INTEGER, product_id INTEGER, rating REAL);"
+    ],
+    "sampleData": {
+      "reviews": [
+        {
+          "review_id": 1,
+          "product_id": 1,
+          "rating": 4
+        },
+        {
+          "review_id": 2,
+          "product_id": 1,
+          "rating": 5
+        },
+        {
+          "review_id": 3,
+          "product_id": 2,
+          "rating": 3.5
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "product_id": 1,
+        "avg_rating": 4.5
+      },
+      {
+        "product_id": 2,
+        "avg_rating": 3.5
+      }
+    ]
+  },
+  {
+    "id": "q22",
+    "title": "High Value Customers By Average Spend",
+    "topic": "Aggregation",
+    "company": "Instacart",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Find customer_id values for customers whose average order amount is greater than 50.",
+    "hint": "Group by customer_id and use HAVING AVG(amount) > 50.",
+    "explanation": "AVG calculates the mean order amount for each customer and HAVING filters those grouped results.",
+    "concepts": [
+      "AVG",
+      "GROUP BY",
+      "HAVING"
+    ],
+    "acceptedAnswers": [
+      "SELECT customer_id FROM orders GROUP BY customer_id HAVING AVG(amount) > 50"
+    ],
+    "requiredKeywords": [
+      "group by",
+      "having",
+      "avg"
+    ],
+    "schema": [
+      "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER, amount INTEGER);"
+    ],
+    "sampleData": {
+      "orders": [
+        {
+          "order_id": 1,
+          "customer_id": 1,
+          "amount": 40
+        },
+        {
+          "order_id": 2,
+          "customer_id": 1,
+          "amount": 80
+        },
+        {
+          "order_id": 3,
+          "customer_id": 2,
+          "amount": 30
+        },
+        {
+          "order_id": 4,
+          "customer_id": 2,
+          "amount": 50
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "customer_id": 1
+      }
+    ]
+  },
+  {
+    "id": "q23",
+    "title": "Monthly Revenue",
+    "topic": "Aggregation",
+    "company": "Stripe",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Return month and revenue for each month in 2024 ordered by month.",
+    "hint": "Use date(paid_at, 'start of month') and SUM(amount).",
+    "explanation": "date(..., 'start of month') buckets payments into months, then SUM aggregates monthly revenue.",
+    "concepts": [
+      "DATE",
+      "SUM",
+      "GROUP BY"
+    ],
+    "acceptedAnswers": [
+      "SELECT date(paid_at, 'start of month') AS month, SUM(amount) AS revenue FROM payments WHERE paid_at >= '2024-01-01' AND paid_at < '2025-01-01' GROUP BY date(paid_at, 'start of month') ORDER BY month"
+    ],
+    "requiredKeywords": [
+      "date",
+      "sum",
+      "group by"
+    ],
+    "schema": [
+      "CREATE TABLE payments (payment_id INTEGER, paid_at TEXT, amount INTEGER);"
+    ],
+    "sampleData": {
+      "payments": [
+        {
+          "payment_id": 1,
+          "paid_at": "2024-01-05",
+          "amount": 100
+        },
+        {
+          "payment_id": 2,
+          "paid_at": "2024-01-20",
+          "amount": 150
+        },
+        {
+          "payment_id": 3,
+          "paid_at": "2024-02-01",
+          "amount": 80
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "month": "2024-01-01",
+        "revenue": 250
+      },
+      {
+        "month": "2024-02-01",
+        "revenue": 80
+      }
+    ]
+  },
+  {
+    "id": "q24",
+    "title": "Products Above Average Price",
+    "topic": "Subquery",
+    "company": "Walmart",
+    "difficulty": "Easy",
+    "xp": 20,
+    "statement": "Find product_name values for products priced above the overall average price.",
+    "hint": "Use a subquery that computes AVG(price).",
+    "explanation": "The subquery returns one value: the average price across all products. The outer query keeps rows above that value.",
+    "concepts": [
+      "SUBQUERY",
+      "AVG",
+      "WHERE"
+    ],
+    "acceptedAnswers": [
+      "SELECT product_name FROM products WHERE price > (SELECT AVG(price) FROM products)"
+    ],
+    "requiredKeywords": [
+      "select",
+      "avg",
+      "where"
+    ],
+    "schema": [
+      "CREATE TABLE products (product_id INTEGER, product_name TEXT, price INTEGER);"
+    ],
+    "sampleData": {
+      "products": [
+        {
+          "product_id": 1,
+          "product_name": "Keyboard",
+          "price": 50
+        },
+        {
+          "product_id": 2,
+          "product_name": "Monitor",
+          "price": 200
+        },
+        {
+          "product_id": 3,
+          "product_name": "Mouse",
+          "price": 25
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "product_name": "Monitor"
+      }
+    ]
+  },
+  {
+    "id": "q25",
+    "title": "Customers Without Orders Using NOT EXISTS",
+    "topic": "Subquery",
+    "company": "Shopify",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Find the customer_id of customers who never placed an order using NOT EXISTS.",
+    "hint": "Filter customers where no matching order exists in a correlated subquery.",
+    "explanation": "NOT EXISTS checks whether the subquery returns any matching rows for each customer.",
+    "concepts": [
+      "NOT EXISTS",
+      "CORRELATED SUBQUERY"
+    ],
+    "acceptedAnswers": [
+      "SELECT c.customer_id FROM customers c WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.customer_id)"
+    ],
+    "requiredKeywords": [
+      "not exists",
+      "select",
+      "where"
+    ],
+    "schema": [
+      "CREATE TABLE customers (customer_id INTEGER, customer_name TEXT);",
+      "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER);"
+    ],
+    "sampleData": {
+      "customers": [
+        {
+          "customer_id": 1,
+          "customer_name": "Alice"
+        },
+        {
+          "customer_id": 2,
+          "customer_name": "Bob"
+        },
+        {
+          "customer_id": 3,
+          "customer_name": "Carol"
+        }
+      ],
+      "orders": [
+        {
+          "order_id": 1,
+          "customer_id": 1
+        },
+        {
+          "order_id": 2,
+          "customer_id": 2
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "customer_id": 3
+      }
+    ]
+  },
+  {
+    "id": "q26",
+    "title": "Employees With Highest Salary",
+    "topic": "Subquery",
+    "company": "Netflix",
+    "difficulty": "Easy",
+    "xp": 20,
+    "statement": "Find employee_name values for employees who earn the maximum salary.",
+    "hint": "Compare salary to a subquery with MAX(salary).",
+    "explanation": "The subquery finds the maximum salary and the outer query returns all employees with that amount.",
+    "concepts": [
+      "SUBQUERY",
+      "MAX"
+    ],
+    "acceptedAnswers": [
+      "SELECT employee_name FROM employees WHERE salary = (SELECT MAX(salary) FROM employees)"
+    ],
+    "requiredKeywords": [
+      "select",
+      "max",
+      "where"
+    ],
+    "schema": [
+      "CREATE TABLE employees (employee_id INTEGER, employee_name TEXT, salary INTEGER);"
+    ],
+    "sampleData": {
+      "employees": [
+        {
+          "employee_id": 1,
+          "employee_name": "Alice",
+          "salary": 120000
+        },
+        {
+          "employee_id": 2,
+          "employee_name": "Bob",
+          "salary": 90000
+        },
+        {
+          "employee_id": 3,
+          "employee_name": "Carol",
+          "salary": 120000
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "employee_name": "Alice"
+      },
+      {
+        "employee_name": "Carol"
+      }
+    ]
+  },
+  {
+    "id": "q27",
+    "title": "Duplicate Emails",
+    "topic": "Subquery",
+    "company": "Meta",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Find email values that appear more than once in the users table.",
+    "hint": "Group by email and use HAVING COUNT(*) > 1.",
+    "explanation": "Grouping by email exposes duplicates, and HAVING keeps only repeated values.",
+    "concepts": [
+      "SUBQUERY",
+      "GROUP BY",
+      "HAVING"
+    ],
+    "acceptedAnswers": [
+      "SELECT email FROM users GROUP BY email HAVING COUNT(*) > 1"
+    ],
+    "requiredKeywords": [
+      "group by",
+      "having",
+      "count"
+    ],
+    "schema": [
+      "CREATE TABLE users (user_id INTEGER, email TEXT);"
+    ],
+    "sampleData": {
+      "users": [
+        {
+          "user_id": 1,
+          "email": "a@test.com"
+        },
+        {
+          "user_id": 2,
+          "email": "b@test.com"
+        },
+        {
+          "user_id": 3,
+          "email": "a@test.com"
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "email": "a@test.com"
+      }
+    ]
+  },
+  {
+    "id": "q28",
+    "title": "Orders Above Customer Average",
+    "topic": "Subquery",
+    "company": "DoorDash",
+    "difficulty": "Hard",
+    "xp": 40,
+    "statement": "Return order_id values for orders whose amount is greater than that customer's average order amount.",
+    "hint": "Use a correlated subquery on customer_id.",
+    "explanation": "For each order, a correlated subquery computes that customer's average order amount, and the outer query compares the current row to it.",
+    "concepts": [
+      "CORRELATED SUBQUERY",
+      "AVG",
+      "WHERE"
+    ],
+    "acceptedAnswers": [
+      "SELECT o1.order_id FROM orders o1 WHERE o1.amount > (SELECT AVG(o2.amount) FROM orders o2 WHERE o2.customer_id = o1.customer_id)"
+    ],
+    "requiredKeywords": [
+      "select",
+      "avg",
+      "where"
+    ],
+    "schema": [
+      "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER, amount INTEGER);"
+    ],
+    "sampleData": {
+      "orders": [
+        {
+          "order_id": 1,
+          "customer_id": 1,
+          "amount": 40
+        },
+        {
+          "order_id": 2,
+          "customer_id": 1,
+          "amount": 80
+        },
+        {
+          "order_id": 3,
+          "customer_id": 2,
+          "amount": 20
+        },
+        {
+          "order_id": 4,
+          "customer_id": 2,
+          "amount": 30
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "order_id": 2
+      },
+      {
+        "order_id": 4
+      }
+    ]
+  },
+  {
+    "id": "q29",
+    "title": "Salary Rank",
+    "topic": "Window Function",
+    "company": "Google",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Return employee_name, salary, and salary_rank using RANK ordered by salary descending.",
+    "hint": "Use RANK() OVER (ORDER BY salary DESC).",
+    "explanation": "RANK assigns the same rank to ties and leaves gaps after ties.",
+    "concepts": [
+      "RANK",
+      "WINDOW FUNCTION",
+      "ORDER BY"
+    ],
+    "acceptedAnswers": [
+      "SELECT employee_name, salary, RANK() OVER (ORDER BY salary DESC) AS salary_rank FROM employees ORDER BY salary DESC, employee_name"
+    ],
+    "requiredKeywords": [
+      "rank",
+      "over",
+      "order by"
+    ],
+    "schema": [
+      "CREATE TABLE employees (employee_id INTEGER, employee_name TEXT, salary INTEGER);"
+    ],
+    "sampleData": {
+      "employees": [
+        {
+          "employee_id": 1,
+          "employee_name": "Alice",
+          "salary": 120000
+        },
+        {
+          "employee_id": 2,
+          "employee_name": "Bob",
+          "salary": 100000
+        },
+        {
+          "employee_id": 3,
+          "employee_name": "Carol",
+          "salary": 100000
+        },
+        {
+          "employee_id": 4,
+          "employee_name": "David",
+          "salary": 90000
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "employee_name": "Alice",
+        "salary": 120000,
+        "salary_rank": 1
+      },
+      {
+        "employee_name": "Bob",
+        "salary": 100000,
+        "salary_rank": 2
+      },
+      {
+        "employee_name": "Carol",
+        "salary": 100000,
+        "salary_rank": 2
+      },
+      {
+        "employee_name": "David",
+        "salary": 90000,
+        "salary_rank": 4
+      }
+    ]
+  },
+  {
+    "id": "q30",
+    "title": "Dense Rank Products By Price",
+    "topic": "Window Function",
+    "company": "Amazon",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Return product_name, price, and price_rank using DENSE_RANK ordered by price descending.",
+    "hint": "Use DENSE_RANK() OVER (ORDER BY price DESC).",
+    "explanation": "DENSE_RANK assigns the same rank to ties without leaving gaps.",
+    "concepts": [
+      "DENSE_RANK",
+      "WINDOW FUNCTION"
+    ],
+    "acceptedAnswers": [
+      "SELECT product_name, price, DENSE_RANK() OVER (ORDER BY price DESC) AS price_rank FROM products ORDER BY price DESC, product_name"
+    ],
+    "requiredKeywords": [
+      "dense_rank",
+      "over",
+      "order by"
+    ],
+    "schema": [
+      "CREATE TABLE products (product_id INTEGER, product_name TEXT, price INTEGER);"
+    ],
+    "sampleData": {
+      "products": [
+        {
+          "product_id": 1,
+          "product_name": "Laptop",
+          "price": 1000
+        },
+        {
+          "product_id": 2,
+          "product_name": "Tablet",
+          "price": 600
+        },
+        {
+          "product_id": 3,
+          "product_name": "Monitor",
+          "price": 600
+        },
+        {
+          "product_id": 4,
+          "product_name": "Mouse",
+          "price": 50
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "product_name": "Laptop",
+        "price": 1000,
+        "price_rank": 1
+      },
+      {
+        "product_name": "Monitor",
+        "price": 600,
+        "price_rank": 2
+      },
+      {
+        "product_name": "Tablet",
+        "price": 600,
+        "price_rank": 2
+      },
+      {
+        "product_name": "Mouse",
+        "price": 50,
+        "price_rank": 3
+      }
+    ]
+  },
+  {
+    "id": "q31",
+    "title": "Previous Day Sales",
+    "topic": "Window Function",
+    "company": "Shopify",
+    "difficulty": "Hard",
+    "xp": 40,
+    "statement": "For each sale_date, return sale_date, amount, and previous_amount using LAG ordered by sale_date.",
+    "hint": "Use LAG(amount) OVER (ORDER BY sale_date).",
+    "explanation": "LAG reads the previous row's value without needing a self join.",
+    "concepts": [
+      "LAG",
+      "WINDOW FUNCTION",
+      "ORDER BY"
+    ],
+    "acceptedAnswers": [
+      "SELECT sale_date, amount, LAG(amount) OVER (ORDER BY sale_date) AS previous_amount FROM sales ORDER BY sale_date"
+    ],
+    "requiredKeywords": [
+      "lag",
+      "over",
+      "order by"
+    ],
+    "schema": [
+      "CREATE TABLE sales (sale_id INTEGER, sale_date TEXT, amount INTEGER);"
+    ],
+    "sampleData": {
+      "sales": [
+        {
+          "sale_id": 1,
+          "sale_date": "2024-01-01",
+          "amount": 100
+        },
+        {
+          "sale_id": 2,
+          "sale_date": "2024-01-02",
+          "amount": 150
+        },
+        {
+          "sale_id": 3,
+          "sale_date": "2024-01-03",
+          "amount": 120
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "sale_date": "2024-01-01",
+        "amount": 100,
+        "previous_amount": null
+      },
+      {
+        "sale_date": "2024-01-02",
+        "amount": 150,
+        "previous_amount": 100
+      },
+      {
+        "sale_date": "2024-01-03",
+        "amount": 120,
+        "previous_amount": 150
+      }
+    ]
+  },
+  {
+    "id": "q32",
+    "title": "Top 2 Products Per Category",
+    "topic": "Window Function",
+    "company": "Etsy",
+    "difficulty": "Hard",
+    "xp": 40,
+    "statement": "Return category, product_name, and total_units for the top 2 products in each category by total_units.",
+    "hint": "Use ROW_NUMBER partitioned by category ordered by total_units descending, then keep rows with rn <= 2.",
+    "explanation": "ROW_NUMBER can rank products inside each category independently.",
+    "concepts": [
+      "ROW_NUMBER",
+      "PARTITION BY",
+      "CTE"
+    ],
+    "acceptedAnswers": [
+      "WITH ranked AS (SELECT category, product_name, total_units, ROW_NUMBER() OVER (PARTITION BY category ORDER BY total_units DESC, product_name) AS rn FROM product_sales) SELECT category, product_name, total_units FROM ranked WHERE rn <= 2 ORDER BY category, total_units DESC, product_name"
+    ],
+    "requiredKeywords": [
+      "row_number",
+      "over",
+      "partition by"
+    ],
+    "schema": [
+      "CREATE TABLE product_sales (product_id INTEGER, product_name TEXT, category TEXT, total_units INTEGER);"
+    ],
+    "sampleData": {
+      "product_sales": [
+        {
+          "product_id": 1,
+          "product_name": "Notebook",
+          "category": "Stationery",
+          "total_units": 120
+        },
+        {
+          "product_id": 2,
+          "product_name": "Pen",
+          "category": "Stationery",
+          "total_units": 200
+        },
+        {
+          "product_id": 3,
+          "product_name": "Pencil",
+          "category": "Stationery",
+          "total_units": 150
+        },
+        {
+          "product_id": 4,
+          "product_name": "Mug",
+          "category": "Home",
+          "total_units": 90
+        },
+        {
+          "product_id": 5,
+          "product_name": "Plate",
+          "category": "Home",
+          "total_units": 150
+        },
+        {
+          "product_id": 6,
+          "product_name": "Bowl",
+          "category": "Home",
+          "total_units": 110
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "category": "Home",
+        "product_name": "Plate",
+        "total_units": 150
+      },
+      {
+        "category": "Home",
+        "product_name": "Bowl",
+        "total_units": 110
+      },
+      {
+        "category": "Stationery",
+        "product_name": "Pen",
+        "total_units": 200
+      },
+      {
+        "category": "Stationery",
+        "product_name": "Pencil",
+        "total_units": 150
+      }
+    ]
+  },
+  {
+    "id": "q33",
+    "title": "First Order Per Customer With CTE",
+    "topic": "CTE",
+    "company": "Uber",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Using a CTE, return customer_id and first_order_date for each customer.",
+    "hint": "Build a CTE that groups orders by customer_id and computes MIN(order_date).",
+    "explanation": "A CTE can make an aggregation step easier to read before selecting from it.",
+    "concepts": [
+      "CTE",
+      "MIN",
+      "GROUP BY"
+    ],
+    "acceptedAnswers": [
+      "WITH first_orders AS (SELECT customer_id, MIN(order_date) AS first_order_date FROM orders GROUP BY customer_id) SELECT customer_id, first_order_date FROM first_orders ORDER BY customer_id"
+    ],
+    "requiredKeywords": [
+      "with",
+      "min",
+      "group by"
+    ],
+    "schema": [
+      "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER, order_date TEXT);"
+    ],
+    "sampleData": {
+      "orders": [
+        {
+          "order_id": 1,
+          "customer_id": 1,
+          "order_date": "2024-02-05"
+        },
+        {
+          "order_id": 2,
+          "customer_id": 1,
+          "order_date": "2024-01-01"
+        },
+        {
+          "order_id": 3,
+          "customer_id": 2,
+          "order_date": "2024-01-15"
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "customer_id": 1,
+        "first_order_date": "2024-01-01"
+      },
+      {
+        "customer_id": 2,
+        "first_order_date": "2024-01-15"
+      }
+    ]
+  },
+  {
+    "id": "q34",
+    "title": "Top Revenue Product Per Category",
+    "topic": "Ranking",
+    "company": "Amazon",
+    "difficulty": "Hard",
+    "xp": 40,
+    "statement": "Return category, product_name, and revenue for the highest revenue product in each category.",
+    "hint": "Aggregate revenue first, then rank products within each category.",
+    "explanation": "This combines aggregation with ranking to solve a classic top-per-group problem.",
+    "concepts": [
+      "RANKING",
+      "SUM",
+      "ROW_NUMBER",
+      "PARTITION BY"
+    ],
+    "acceptedAnswers": [
+      "WITH product_revenue AS (SELECT category, product_name, SUM(quantity * price) AS revenue FROM sales GROUP BY category, product_name), ranked AS (SELECT category, product_name, revenue, ROW_NUMBER() OVER (PARTITION BY category ORDER BY revenue DESC, product_name) AS rn FROM product_revenue) SELECT category, product_name, revenue FROM ranked WHERE rn = 1 ORDER BY category"
+    ],
+    "requiredKeywords": [
+      "sum",
+      "row_number",
+      "partition by"
+    ],
+    "schema": [
+      "CREATE TABLE sales (sale_id INTEGER, category TEXT, product_name TEXT, quantity INTEGER, price INTEGER);"
+    ],
+    "sampleData": {
+      "sales": [
+        {
+          "sale_id": 1,
+          "category": "Electronics",
+          "product_name": "Keyboard",
+          "quantity": 2,
+          "price": 50
+        },
+        {
+          "sale_id": 2,
+          "category": "Electronics",
+          "product_name": "Monitor",
+          "quantity": 1,
+          "price": 200
+        },
+        {
+          "sale_id": 3,
+          "category": "Home",
+          "product_name": "Mug",
+          "quantity": 4,
+          "price": 10
+        },
+        {
+          "sale_id": 4,
+          "category": "Home",
+          "product_name": "Plate",
+          "quantity": 3,
+          "price": 20
+        }
+      ]
+    },
+    "expectedOutput": [
+      {
+        "category": "Electronics",
+        "product_name": "Monitor",
+        "revenue": 200
+      },
+      {
+        "category": "Home",
+        "product_name": "Plate",
+        "revenue": 60
+      }
+    ]
+  },
+  {
+    "id": "qCTE1",
+    "title": "High Value Orders Using CTE",
+    "topic": "CTE",
+    "company": "Amazon",
+    "difficulty": "Easy",
+    "xp": 25,
+    "statement": "Find order_id values where amount is greater than 100 using a CTE.",
+    "hint": "Create a CTE and filter in outer query.",
+    "explanation": "CTE allows you to define a temporary result set and reuse it.",
+    "concepts": ["CTE", "WITH"],
+    "acceptedAnswers": [
+      "WITH high_orders AS (SELECT * FROM orders WHERE amount > 100) SELECT order_id FROM high_orders"
+    ],
+    "requiredKeywords": ["with"],
+    "schema": [
+      "CREATE TABLE orders (order_id INTEGER, amount INTEGER);"
+    ],
+    "sampleData": {
+      "orders": [
+        { "order_id": 1, "amount": 50 },
+        { "order_id": 2, "amount": 150 }
+      ]
+    },
+    "expectedOutput": [
+      { "order_id": 2 }
+    ]
+  },
+  {
+    "id": "qCTE2",
+    "title": "Customer Total Spend with CTE",
+    "topic": "CTE",
+    "company": "Shopify",
+    "difficulty": "Easy",
+    "xp": 25,
+    "statement": "Return customer_id and total spend using a CTE.",
+    "hint": "Aggregate inside CTE.",
+    "explanation": "CTE simplifies grouped calculations.",
+    "concepts": ["CTE", "SUM"],
+    "acceptedAnswers": [
+      "WITH spend AS (SELECT customer_id, SUM(amount) AS total_spend FROM orders GROUP BY customer_id) SELECT * FROM spend"
+    ],
+    "requiredKeywords": ["with", "sum"],
+    "schema": [
+      "CREATE TABLE orders (customer_id INTEGER, amount INTEGER);"
+    ],
+    "sampleData": {
+      "orders": [
+        { "customer_id": 1, "amount": 100 },
+        { "customer_id": 1, "amount": 50 }
+      ]
+    },
+    "expectedOutput": [
+      { "customer_id": 1, "total_spend": 150 }
+    ]
+  },
+  {
+    "id": "qCTE3",
+    "title": "High Spending Customers",
+    "topic": "CTE",
+    "company": "Instacart",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Find customers with total spend greater than 100.",
+    "hint": "Use CTE then filter.",
+    "explanation": "CTE separates aggregation and filtering logic.",
+    "concepts": ["CTE", "HAVING"],
+    "acceptedAnswers": [
+      "WITH totals AS (SELECT customer_id, SUM(amount) AS total FROM orders GROUP BY customer_id) SELECT customer_id FROM totals WHERE total > 100"
+    ],
+    "requiredKeywords": ["with"],
+    "schema": [
+      "CREATE TABLE orders (customer_id INTEGER, amount INTEGER);"
+    ],
+    "sampleData": {
+      "orders": [
+        { "customer_id": 1, "amount": 120 },
+        { "customer_id": 2, "amount": 50 }
+      ]
+    },
+    "expectedOutput": [
+      { "customer_id": 1 }
+    ]
+  },
+  {
+    "id": "qCTE4",
+    "title": "Join with CTE",
+    "topic": "CTE",
+    "company": "Uber",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Join customer spend with customers table.",
+    "hint": "Create spend CTE then join.",
+    "concepts": ["CTE", "JOIN"],
+    "acceptedAnswers": [
+      "WITH spend AS (SELECT customer_id, SUM(amount) AS total FROM orders GROUP BY customer_id) SELECT c.customer_id, total FROM customers c JOIN spend s ON c.customer_id = s.customer_id"
+    ],
+    "requiredKeywords": ["with", "join"],
+    "schema": [
+      "CREATE TABLE customers (customer_id INTEGER);",
+      "CREATE TABLE orders (customer_id INTEGER, amount INTEGER);"
+    ],
+    "sampleData": {
+      "customers": [{ "customer_id": 1 }],
+      "orders": [{ "customer_id": 1, "amount": 100 }]
+    },
+    "expectedOutput": [
+      { "customer_id": 1, "total": 100 }
+    ]
+  },
+  {
+    "id": "qCTE5",
+    "title": "Multiple CTEs",
+    "topic": "CTE",
+    "company": "Meta",
+    "difficulty": "Medium",
+    "xp": 35,
+    "statement": "Use two CTEs to compute total and average.",
+    "concepts": ["CTE"],
+    "acceptedAnswers": [
+      "WITH totals AS (SELECT SUM(amount) AS total FROM orders), avg_cte AS (SELECT AVG(amount) AS avg FROM orders) SELECT total, avg FROM totals, avg_cte"
+    ],
+    "requiredKeywords": ["with"],
+    "schema": [
+      "CREATE TABLE orders (amount INTEGER);"
+    ],
+    "sampleData": {
+      "orders": [
+        { "amount": 100 },
+        { "amount": 200 }
+      ]
+    },
+    "expectedOutput": [
+      { "total": 300, "avg": 150 }
+    ]
+  },
+  {
+    "id": "qCTE6",
+    "title": "Running Total Using CTE",
+    "topic": "CTE",
+    "company": "Shopify",
+    "difficulty": "Hard",
+    "xp": 40,
+    "statement": "Compute running total using a CTE.",
+    "concepts": ["CTE", "WINDOW FUNCTION"],
+    "acceptedAnswers": [
+      "WITH base AS (SELECT * FROM sales) SELECT sale_date, amount, SUM(amount) OVER (ORDER BY sale_date) AS running_total FROM base"
+    ],
+    "requiredKeywords": ["with", "over"],
+    "schema": [
+      "CREATE TABLE sales (sale_date TEXT, amount INTEGER);"
+    ],
+    "sampleData": {
+      "sales": [
+        { "sale_date": "2024-01-01", "amount": 100 },
+        { "sale_date": "2024-01-02", "amount": 200 }
+      ]
+    },
+    "expectedOutput": [
+      { "sale_date": "2024-01-01", "amount": 100, "running_total": 100 },
+      { "sale_date": "2024-01-02", "amount": 200, "running_total": 300 }
+    ]
+  },
+  {
+    "id": "qCTE7",
+    "title": "Remove Duplicate Rows",
+    "topic": "CTE",
+    "company": "Google",
+    "difficulty": "Hard",
+    "xp": 40,
+    "statement": "Remove duplicate emails using ROW_NUMBER and CTE.",
+    "concepts": ["CTE", "ROW_NUMBER"],
+    "acceptedAnswers": [
+      "WITH ranked AS (SELECT email, ROW_NUMBER() OVER (PARTITION BY email ORDER BY email) AS rn FROM users) SELECT email FROM ranked WHERE rn = 1"
+    ],
+    "requiredKeywords": ["with"],
+    "schema": [
+      "CREATE TABLE users (email TEXT);"
+    ],
+    "sampleData": {
+      "users": [
+        { "email": "a@test.com" },
+        { "email": "a@test.com" }
+      ]
+    },
+    "expectedOutput": [
+      { "email": "a@test.com" }
+    ]
+  },
+  {
+    "id": "qCTE8",
+    "title": "Top Product Per Category",
+    "topic": "CTE",
+    "company": "Amazon",
+    "difficulty": "Hard",
+    "xp": 40,
+    "statement": "Return top product per category.",
+    "concepts": ["CTE", "ROW_NUMBER"],
+    "acceptedAnswers": [
+      "WITH ranked AS (SELECT category, product, ROW_NUMBER() OVER (PARTITION BY category ORDER BY sales DESC) rn FROM products) SELECT category, product FROM ranked WHERE rn = 1"
+    ],
+    "requiredKeywords": ["with"],
+    "schema": [
+      "CREATE TABLE products (category TEXT, product TEXT, sales INTEGER);"
+    ],
+    "sampleData": {
+      "products": [
+        { "category": "A", "product": "P1", "sales": 10 },
+        { "category": "A", "product": "P2", "sales": 20 }
+      ]
+    },
+    "expectedOutput": [
+      { "category": "A", "product": "P2" }
+    ]
+  },
+  {
+    "id": "qCTE9",
+    "title": "Layered Query with CTE",
+    "topic": "CTE",
+    "company": "Meta",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Compute average and filter above it using a CTE.",
+    "concepts": ["CTE"],
+    "acceptedAnswers": [
+      "WITH avg_cte AS (SELECT AVG(amount) AS avg_val FROM orders) SELECT order_id FROM orders, avg_cte WHERE amount > avg_val"
+    ],
+    "requiredKeywords": ["with"],
+    "schema": [
+      "CREATE TABLE orders (order_id INTEGER, amount INTEGER);"
+    ],
+    "sampleData": {
+      "orders": [
+        { "order_id": 1, "amount": 100 },
+        { "order_id": 2, "amount": 200 }
+      ]
+    },
+    "expectedOutput": [
+      { "order_id": 2 }
+    ]
+  },
+  {
+    "id": "qJOIN1",
+    "title": "Customers With Multiple Orders",
+    "topic": "JOIN",
+    "company": "Amazon",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Find customer_name values for customers who have placed more than 1 order.",
+    "hint": "Join customers and orders, then group by customer.",
+    "explanation": "After joining customers with orders, grouping allows counting orders per customer and filtering those with more than one.",
+    "concepts": ["JOIN", "GROUP BY", "HAVING"],
+    "acceptedAnswers": [
+      "SELECT c.customer_name FROM customers c JOIN orders o ON c.customer_id = o.customer_id GROUP BY c.customer_name HAVING COUNT(o.order_id) > 1"
+    ],
+    "requiredKeywords": ["join", "group by", "having"],
+    "schema": [
+      "CREATE TABLE customers (customer_id INTEGER, customer_name TEXT);",
+      "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER);"
+    ],
+    "sampleData": {
+      "customers": [
+        { "customer_id": 1, "customer_name": "Alice" },
+        { "customer_id": 2, "customer_name": "Bob" }
+      ],
+      "orders": [
+        { "order_id": 1, "customer_id": 1 },
+        { "order_id": 2, "customer_id": 1 },
+        { "order_id": 3, "customer_id": 2 }
+      ]
+    },
+    "expectedOutput": [
+      { "customer_name": "Alice" }
+    ]
+  },
+  {
+    "id": "qJOIN2",
+    "title": "Orders With Missing Customers",
+    "topic": "JOIN",
+    "company": "Uber",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Find order_id values for orders that do not have a matching customer.",
+    "hint": "LEFT JOIN from orders to customers.",
+    "explanation": "Using a LEFT JOIN from orders ensures all orders are included. Orders without matching customers will have NULL values on the customer side.",
+    "concepts": ["LEFT JOIN", "NULL"],
+    "acceptedAnswers": [
+      "SELECT o.order_id FROM orders o LEFT JOIN customers c ON o.customer_id = c.customer_id WHERE c.customer_id IS NULL"
+    ],
+    "requiredKeywords": ["left join", "null"],
+    "schema": [
+      "CREATE TABLE customers (customer_id INTEGER);",
+      "CREATE TABLE orders (order_id INTEGER, customer_id INTEGER);"
+    ],
+    "sampleData": {
+      "customers": [
+        { "customer_id": 1 }
+      ],
+      "orders": [
+        { "order_id": 1, "customer_id": 1 },
+        { "order_id": 2, "customer_id": 2 }
+      ]
+    },
+    "expectedOutput": [
+      { "order_id": 2 }
+    ]
+  },
+  {
+    "id": "qR1",
+    "title": "Rank Employees by Salary",
+    "topic": "Ranking",
+    "company": "Google",
+    "difficulty": "Easy",
+    "xp": 25,
+    "statement": "Assign a rank to employees based on salary descending.",
+    "hint": "Use RANK() OVER.",
+    "concepts": ["RANK"],
+    "acceptedAnswers": [
+      "SELECT employee_name, RANK() OVER (ORDER BY salary DESC) AS rank FROM employees"
+    ],
+    "requiredKeywords": ["rank"],
+    "schema": [
+      "CREATE TABLE employees (employee_name TEXT, salary INTEGER);"
+    ],
+    "sampleData": {
+      "employees": [
+        { "employee_name": "Alice", "salary": 200 },
+        { "employee_name": "Bob", "salary": 100 }
+      ]
+    },
+    "expectedOutput": [
+      { "employee_name": "Alice", "rank": 1 },
+      { "employee_name": "Bob", "rank": 2 }
+    ]
+  },
+  {
+    "id": "qR2",
+    "title": "Dense Rank Salaries",
+    "topic": "Ranking",
+    "company": "Amazon",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Assign dense rank based on salary descending.",
+    "concepts": ["DENSE_RANK"],
+    "acceptedAnswers": [
+      "SELECT salary, DENSE_RANK() OVER (ORDER BY salary DESC) AS rank FROM employees"
+    ],
+    "requiredKeywords": ["dense_rank"],
+    "schema": [
+      "CREATE TABLE employees (salary INTEGER);"
+    ],
+    "sampleData": {
+      "employees": [
+        { "salary": 200 },
+        { "salary": 200 },
+        { "salary": 100 }
+      ]
+    },
+    "expectedOutput": [
+      { "salary": 200, "rank": 1 },
+      { "salary": 200, "rank": 1 },
+      { "salary": 100, "rank": 2 }
+    ]
+  },
+  {
+    "id": "qR3",
+    "title": "Row Number Per Department",
+    "topic": "Ranking",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Assign row numbers within each department ordered by salary descending.",
+    "concepts": ["ROW_NUMBER"],
+    "acceptedAnswers": [
+      "SELECT department, employee_name, ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary DESC) AS row_num FROM employees"
+    ],
+    "requiredKeywords": ["row_number"],
+    "schema": [
+      "CREATE TABLE employees (department TEXT, employee_name TEXT, salary INTEGER);"
+    ],
+    "sampleData": {
+      "employees": [
+        { "department": "A", "employee_name": "Alice", "salary": 200 },
+        { "department": "A", "employee_name": "Bob", "salary": 100 }
+      ]
+    },
+    "expectedOutput": [
+      { "department": "A", "employee_name": "Alice", "row_num": 1 },
+      { "department": "A", "employee_name": "Bob", "row_num": 2 }
+    ]
+  },
+  {
+    "id": "qR4",
+    "title": "Top Product Per Category",
+    "topic": "Ranking",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Return top product per category based on sales.",
+    "concepts": ["ROW_NUMBER"],
+    "acceptedAnswers": [
+      "SELECT category, product FROM (SELECT category, product, ROW_NUMBER() OVER (PARTITION BY category ORDER BY sales DESC) rn FROM products) WHERE rn = 1"
+    ],
+    "requiredKeywords": ["row_number"],
+    "schema": [
+      "CREATE TABLE products (category TEXT, product TEXT, sales INTEGER);"
+    ],
+    "sampleData": {
+      "products": [
+        { "category": "A", "product": "P1", "sales": 10 },
+        { "category": "A", "product": "P2", "sales": 20 }
+      ]
+    },
+    "expectedOutput": [
+      { "category": "A", "product": "P2" }
+    ]
+  },
+  {
+    "id": "qR5",
+    "title": "Second Highest Salary Using Rank",
+    "topic": "Ranking",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Find the second highest salary using ranking.",
+    "concepts": ["RANK"],
+    "acceptedAnswers": [
+      "SELECT salary FROM (SELECT salary, RANK() OVER (ORDER BY salary DESC) r FROM employees) WHERE r = 2"
+    ],
+    "requiredKeywords": ["rank"],
+    "schema": [
+      "CREATE TABLE employees (salary INTEGER);"
+    ],
+    "sampleData": {
+      "employees": [
+        { "salary": 300 },
+        { "salary": 200 },
+        { "salary": 100 }
+      ]
+    },
+    "expectedOutput": [
+      { "salary": 200 }
+    ]
+  },
+  {
+    "id": "qS1",
+    "title": "Products Above Average Price",
+    "topic": "Subquery",
+    "difficulty": "Easy",
+    "xp": 25,
+    "statement": "Find products priced above average.",
+    "concepts": ["SUBQUERY"],
+    "acceptedAnswers": [
+      "SELECT product_name FROM products WHERE price > (SELECT AVG(price) FROM products)"
+    ],
+    "requiredKeywords": ["select"],
+    "schema": [
+      "CREATE TABLE products (product_name TEXT, price INTEGER);"
+    ],
+    "sampleData": {
+      "products": [
+        { "product_name": "A", "price": 10 },
+        { "product_name": "B", "price": 20 }
+      ]
+    },
+    "expectedOutput": [
+      { "product_name": "B" }
+    ]
+  },
+  {
+    "id": "qS2",
+    "title": "Customers Without Orders (NOT EXISTS)",
+    "topic": "Subquery",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Find customers who never placed orders using NOT EXISTS.",
+    "concepts": ["NOT EXISTS"],
+    "acceptedAnswers": [
+      "SELECT customer_id FROM customers c WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.customer_id)"
+    ],
+    "requiredKeywords": ["exists"],
+    "schema": [
+      "CREATE TABLE customers (customer_id INTEGER);",
+      "CREATE TABLE orders (customer_id INTEGER);"
+    ],
+    "sampleData": {
+      "customers": [
+        { "customer_id": 1 },
+        { "customer_id": 2 }
+      ],
+      "orders": [
+        { "customer_id": 1 }
+      ]
+    },
+    "expectedOutput": [
+      { "customer_id": 2 }
+    ]
+  },
+  {
+    "id": "qW1",
+    "title": "Running Total",
+    "topic": "Window Function",
+    "difficulty": "Easy",
+    "xp": 25,
+    "statement": "Compute running total of sales.",
+    "concepts": ["SUM OVER"],
+    "acceptedAnswers": [
+      "SELECT sale_date, amount, SUM(amount) OVER (ORDER BY sale_date) AS running_total FROM sales"
+    ],
+    "requiredKeywords": ["over"],
+    "schema": [
+      "CREATE TABLE sales (sale_date TEXT, amount INTEGER);"
+    ],
+    "sampleData": {
+      "sales": [
+        { "sale_date": "2024-01-01", "amount": 100 },
+        { "sale_date": "2024-01-02", "amount": 200 }
+      ]
+    },
+    "expectedOutput": [
+      { "sale_date": "2024-01-01", "amount": 100, "running_total": 100 },
+      { "sale_date": "2024-01-02", "amount": 200, "running_total": 300 }
+    ]
+  },
+  {
+    "id": "qW2",
+    "title": "Previous Day Sales",
+    "topic": "Window Function",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Return previous day's sales using LAG.",
+    "concepts": ["LAG"],
+    "acceptedAnswers": [
+      "SELECT sale_date, amount, LAG(amount) OVER (ORDER BY sale_date) AS prev_amount FROM sales"
+    ],
+    "requiredKeywords": ["lag"],
+    "schema": [
+      "CREATE TABLE sales (sale_date TEXT, amount INTEGER);"
+    ],
+    "sampleData": {
+      "sales": [
+        { "sale_date": "2024-01-01", "amount": 100 },
+        { "sale_date": "2024-01-02", "amount": 200 }
+      ]
+    },
+    "expectedOutput": [
+      { "sale_date": "2024-01-01", "amount": 100, "prev_amount": null },
+      { "sale_date": "2024-01-02", "amount": 200, "prev_amount": 100 }
+    ]
+  },
+  {
+    "id": "qAirbnb1",
+    "title": "Active Listings Per City",
+    "topic": "Aggregation",
+    "company": "Airbnb",
+    "difficulty": "Easy",
+    "xp": 25,
+    "statement": "Return city and number of active listings.",
+    "hint": "Filter active listings and group by city.",
+    "explanation": "Count listings where is_active = 1 grouped by city.",
+    "concepts": ["COUNT", "GROUP BY"],
+    "acceptedAnswers": [
+      "SELECT city, COUNT(*) AS active_listings FROM listings WHERE is_active = 1 GROUP BY city"
+    ],
+    "requiredKeywords": ["count", "group by"],
+    "schema": [
+      "CREATE TABLE listings (listing_id INTEGER, city TEXT, is_active INTEGER);"
+    ],
+    "sampleData": {
+      "listings": [
+        { "listing_id": 1, "city": "NYC", "is_active": 1 },
+        { "listing_id": 2, "city": "NYC", "is_active": 0 },
+        { "listing_id": 3, "city": "SF", "is_active": 1 }
+      ]
+    },
+    "expectedOutput": [
+      { "city": "NYC", "active_listings": 1 },
+      { "city": "SF", "active_listings": 1 }
+    ]
+  },
+  {
+    "id": "qAirbnb2",
+    "title": "Total Revenue Per Host",
+    "topic": "JOIN",
+    "company": "Airbnb",
+    "difficulty": "Easy",
+    "xp": 25,
+    "statement": "Return host_id and total booking revenue.",
+    "concepts": ["JOIN", "SUM"],
+    "acceptedAnswers": [
+      "SELECT l.host_id, SUM(b.price) AS revenue FROM listings l JOIN bookings b ON l.listing_id = b.listing_id GROUP BY l.host_id"
+    ],
+    "requiredKeywords": ["join", "sum"],
+    "schema": [
+      "CREATE TABLE listings (listing_id INTEGER, host_id INTEGER);",
+      "CREATE TABLE bookings (booking_id INTEGER, listing_id INTEGER, price INTEGER);"
+    ],
+    "sampleData": {
+      "listings": [{ "listing_id": 1, "host_id": 10 }],
+      "bookings": [
+        { "booking_id": 1, "listing_id": 1, "price": 100 },
+        { "booking_id": 2, "listing_id": 1, "price": 200 }
+      ]
+    },
+    "expectedOutput": [
+      { "host_id": 10, "revenue": 300 }
+    ]
+  },
+  {
+    "id": "qAirbnb3",
+    "title": "Hosts With No Bookings",
+    "topic": "JOIN",
+    "company": "Airbnb",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Find host_id values for hosts with no bookings.",
+    "concepts": ["LEFT JOIN"],
+    "acceptedAnswers": [
+      "SELECT DISTINCT l.host_id FROM listings l LEFT JOIN bookings b ON l.listing_id = b.listing_id WHERE b.booking_id IS NULL"
+    ],
+    "requiredKeywords": ["left join"],
+    "schema": [
+      "CREATE TABLE listings (listing_id INTEGER, host_id INTEGER);",
+      "CREATE TABLE bookings (booking_id INTEGER, listing_id INTEGER);"
+    ],
+    "sampleData": {
+      "listings": [
+        { "listing_id": 1, "host_id": 10 },
+        { "listing_id": 2, "host_id": 20 }
+      ],
+      "bookings": [
+        { "booking_id": 1, "listing_id": 1 }
+      ]
+    },
+    "expectedOutput": [
+      { "host_id": 20 }
+    ]
+  },
+  {
+    "id": "qAirbnb4",
+    "title": "Average Listing Price Per City",
+    "topic": "Aggregation",
+    "company": "Airbnb",
+    "difficulty": "Easy",
+    "xp": 25,
+    "statement": "Return city and average listing price.",
+    "concepts": ["AVG"],
+    "acceptedAnswers": [
+      "SELECT city, AVG(price) AS avg_price FROM listings GROUP BY city"
+    ],
+    "requiredKeywords": ["avg"],
+    "schema": [
+      "CREATE TABLE listings (city TEXT, price INTEGER);"
+    ],
+    "sampleData": {
+      "listings": [
+        { "city": "NYC", "price": 100 },
+        { "city": "NYC", "price": 200 }
+      ]
+    },
+    "expectedOutput": [
+      { "city": "NYC", "avg_price": 150 }
+    ]
+  },
+  {
+    "id": "qAirbnb5",
+    "title": "Top Listing Per City",
+    "topic": "Ranking",
+    "company": "Airbnb",
+    "difficulty": "Medium",
+    "xp": 35,
+    "statement": "Return the highest priced listing per city.",
+    "concepts": ["ROW_NUMBER"],
+    "acceptedAnswers": [
+      "SELECT city, listing_id FROM (SELECT city, listing_id, ROW_NUMBER() OVER (PARTITION BY city ORDER BY price DESC) rn FROM listings) WHERE rn = 1"
+    ],
+    "requiredKeywords": ["row_number"],
+    "schema": [
+      "CREATE TABLE listings (listing_id INTEGER, city TEXT, price INTEGER);"
+    ],
+    "sampleData": {
+      "listings": [
+        { "listing_id": 1, "city": "NYC", "price": 100 },
+        { "listing_id": 2, "city": "NYC", "price": 200 }
+      ]
+    },
+    "expectedOutput": [
+      { "city": "NYC", "listing_id": 2 }
+    ]
+  },
+  {
+    "id": "qAirbnb6",
+    "title": "Monthly Bookings",
+    "topic": "Date Functions",
+    "company": "Airbnb",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Return month and number of bookings.",
+    "concepts": ["GROUP BY"],
+    "acceptedAnswers": [
+      "SELECT date(created_at, 'start of month') AS month, COUNT(*) AS bookings FROM bookings GROUP BY month"
+    ],
+    "requiredKeywords": ["group by"],
+    "schema": [
+      "CREATE TABLE bookings (created_at TEXT);"
+    ],
+    "sampleData": {
+      "bookings": [
+        { "created_at": "2024-01-01" },
+        { "created_at": "2024-01-15" }
+      ]
+    },
+    "expectedOutput": [
+      { "month": "2024-01-01", "bookings": 2 }
+    ]
+  },
+  {
+    "id": "qAirbnb7",
+    "title": "Listings Above City Average",
+    "topic": "Subquery",
+    "company": "Airbnb",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Find listings priced above their city average.",
+    "concepts": ["SUBQUERY"],
+    "acceptedAnswers": [
+      "SELECT listing_id FROM listings l1 WHERE price > (SELECT AVG(price) FROM listings l2 WHERE l1.city = l2.city)"
+    ],
+    "requiredKeywords": ["select"],
+    "schema": [
+      "CREATE TABLE listings (listing_id INTEGER, city TEXT, price INTEGER);"
+    ],
+    "sampleData": {
+      "listings": [
+        { "listing_id": 1, "city": "NYC", "price": 100 },
+        { "listing_id": 2, "city": "NYC", "price": 200 }
+      ]
+    },
+    "expectedOutput": [
+      { "listing_id": 2 }
+    ]
+  },
+  {
+    "id": "qAirbnb8",
+    "title": "Running Revenue",
+    "topic": "Window Function",
+    "company": "Airbnb",
+    "difficulty": "Hard",
+    "xp": 40,
+    "statement": "Compute running total revenue by booking date.",
+    "concepts": ["SUM OVER"],
+    "acceptedAnswers": [
+      "SELECT booking_date, price, SUM(price) OVER (ORDER BY booking_date) AS running_total FROM bookings"
+    ],
+    "requiredKeywords": ["over"],
+    "schema": [
+      "CREATE TABLE bookings (booking_date TEXT, price INTEGER);"
+    ],
+    "sampleData": {
+      "bookings": [
+        { "booking_date": "2024-01-01", "price": 100 },
+        { "booking_date": "2024-01-02", "price": 200 }
+      ]
+    },
+    "expectedOutput": [
+      { "booking_date": "2024-01-01", "price": 100, "running_total": 100 },
+      { "booking_date": "2024-01-02", "price": 200, "running_total": 300 }
+    ]
+  },
+  {
+    "id": "qAirbnb9",
+    "title": "Top 2 Hosts by Revenue",
+    "topic": "Ranking",
+    "company": "Airbnb",
+    "difficulty": "Hard",
+    "xp": 40,
+    "statement": "Return top 2 hosts by total revenue.",
+    "concepts": ["RANK"],
+    "acceptedAnswers": [
+      "SELECT host_id FROM (SELECT l.host_id, SUM(b.price) AS revenue, RANK() OVER (ORDER BY SUM(b.price) DESC) r FROM listings l JOIN bookings b ON l.listing_id = b.listing_id GROUP BY l.host_id) WHERE r <= 2"
+    ],
+    "requiredKeywords": ["rank"],
+    "schema": [
+      "CREATE TABLE listings (listing_id INTEGER, host_id INTEGER);",
+      "CREATE TABLE bookings (listing_id INTEGER, price INTEGER);"
+    ],
+    "sampleData": {
+      "listings": [
+        { "listing_id": 1, "host_id": 10 },
+        { "listing_id": 2, "host_id": 20 }
+      ],
+      "bookings": [
+        { "listing_id": 1, "price": 100 },
+        { "listing_id": 2, "price": 200 }
+      ]
+    },
+    "expectedOutput": [
+      { "host_id": 20 },
+      { "host_id": 10 }
+    ]
+  },
+  {
+    "id": "qEtsy1",
+    "title": "Total Sales Per Seller",
+    "topic": "Aggregation",
+    "company": "Etsy",
+    "difficulty": "Easy",
+    "xp": 25,
+    "statement": "Return seller_id and total sales revenue.",
+    "hint": "Use SUM(price) and GROUP BY seller_id.",
+    "explanation": "Aggregate sales per seller to compute total revenue.",
+    "concepts": ["SUM", "GROUP BY"],
+    "acceptedAnswers": [
+      "SELECT seller_id, SUM(price) AS total_sales FROM orders GROUP BY seller_id"
+    ],
+    "requiredKeywords": ["sum", "group by"],
+    "schema": [
+      "CREATE TABLE orders (order_id INTEGER, seller_id INTEGER, price INTEGER);"
+    ],
+    "sampleData": {
+      "orders": [
+        { "order_id": 1, "seller_id": 10, "price": 100 },
+        { "order_id": 2, "seller_id": 10, "price": 50 }
+      ]
+    },
+    "expectedOutput": [
+      { "seller_id": 10, "total_sales": 150 }
+    ]
+  },
+  {
+    "id": "qEtsy2",
+    "title": "Top Selling Product",
+    "topic": "Ranking",
+    "company": "Etsy",
+    "difficulty": "Easy",
+    "xp": 25,
+    "statement": "Find the product with the highest total sales.",
+    "concepts": ["RANK"],
+    "acceptedAnswers": [
+      "SELECT product_id FROM (SELECT product_id, SUM(quantity) AS total, RANK() OVER (ORDER BY SUM(quantity) DESC) r FROM sales GROUP BY product_id) WHERE r = 1"
+    ],
+    "requiredKeywords": ["rank"],
+    "schema": [
+      "CREATE TABLE sales (product_id INTEGER, quantity INTEGER);"
+    ],
+    "sampleData": {
+      "sales": [
+        { "product_id": 1, "quantity": 5 },
+        { "product_id": 2, "quantity": 10 }
+      ]
+    },
+    "expectedOutput": [
+      { "product_id": 2 }
+    ]
+  },
+  {
+    "id": "qEtsy3",
+    "title": "Buyers With Multiple Purchases",
+    "topic": "Aggregation",
+    "company": "Etsy",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Find buyer_id values who made more than 1 purchase.",
+    "concepts": ["HAVING"],
+    "acceptedAnswers": [
+      "SELECT buyer_id FROM orders GROUP BY buyer_id HAVING COUNT(*) > 1"
+    ],
+    "requiredKeywords": ["having"],
+    "schema": [
+      "CREATE TABLE orders (buyer_id INTEGER);"
+    ],
+    "sampleData": {
+      "orders": [
+        { "buyer_id": 1 },
+        { "buyer_id": 1 },
+        { "buyer_id": 2 }
+      ]
+    },
+    "expectedOutput": [
+      { "buyer_id": 1 }
+    ]
+  },
+  {
+    "id": "qEtsy4",
+    "title": "Products Never Sold",
+    "topic": "JOIN",
+    "company": "Etsy",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Find product_id values that were never sold.",
+    "concepts": ["LEFT JOIN"],
+    "acceptedAnswers": [
+      "SELECT p.product_id FROM products p LEFT JOIN sales s ON p.product_id = s.product_id WHERE s.product_id IS NULL"
+    ],
+    "requiredKeywords": ["left join"],
+    "schema": [
+      "CREATE TABLE products (product_id INTEGER);",
+      "CREATE TABLE sales (product_id INTEGER);"
+    ],
+    "sampleData": {
+      "products": [
+        { "product_id": 1 },
+        { "product_id": 2 }
+      ],
+      "sales": [
+        { "product_id": 1 }
+      ]
+    },
+    "expectedOutput": [
+      { "product_id": 2 }
+    ]
+  },
+  {
+    "id": "qEtsy5",
+    "title": "Average Order Value Per Buyer",
+    "topic": "Aggregation",
+    "company": "Etsy",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Return buyer_id and average order value.",
+    "concepts": ["AVG"],
+    "acceptedAnswers": [
+      "SELECT buyer_id, AVG(price) AS avg_order_value FROM orders GROUP BY buyer_id"
+    ],
+    "requiredKeywords": ["avg"],
+    "schema": [
+      "CREATE TABLE orders (buyer_id INTEGER, price INTEGER);"
+    ],
+    "sampleData": {
+      "orders": [
+        { "buyer_id": 1, "price": 100 },
+        { "buyer_id": 1, "price": 200 }
+      ]
+    },
+    "expectedOutput": [
+      { "buyer_id": 1, "avg_order_value": 150 }
+    ]
+  },
+  {
+    "id": "qEtsy6",
+    "title": "Sellers Above Average Revenue",
+    "topic": "Subquery",
+    "company": "Etsy",
+    "difficulty": "Hard",
+    "xp": 40,
+    "statement": "Find sellers whose total revenue is above average.",
+    "concepts": ["SUBQUERY"],
+    "acceptedAnswers": [
+      "SELECT seller_id FROM (SELECT seller_id, SUM(price) AS total FROM orders GROUP BY seller_id) WHERE total > (SELECT AVG(total) FROM (SELECT SUM(price) AS total FROM orders GROUP BY seller_id))"
+    ],
+    "requiredKeywords": ["select"],
+    "schema": [
+      "CREATE TABLE orders (seller_id INTEGER, price INTEGER);"
+    ],
+    "sampleData": {
+      "orders": [
+        { "seller_id": 1, "price": 100 },
+        { "seller_id": 2, "price": 200 }
+      ]
+    },
+    "expectedOutput": [
+      { "seller_id": 2 }
+    ]
+  },
+  {
+    "id": "qEtsy7",
+    "title": "Running Sales Per Seller",
+    "topic": "Window Function",
+    "company": "Etsy",
+    "difficulty": "Hard",
+    "xp": 40,
+    "statement": "Compute running total of sales per seller ordered by date.",
+    "concepts": ["SUM OVER"],
+    "acceptedAnswers": [
+      "SELECT seller_id, order_date, price, SUM(price) OVER (PARTITION BY seller_id ORDER BY order_date) AS running_total FROM orders"
+    ],
+    "requiredKeywords": ["over"],
+    "schema": [
+      "CREATE TABLE orders (seller_id INTEGER, order_date TEXT, price INTEGER);"
+    ],
+    "sampleData": {
+      "orders": [
+        { "seller_id": 1, "order_date": "2024-01-01", "price": 100 },
+        { "seller_id": 1, "order_date": "2024-01-02", "price": 200 }
+      ]
+    },
+    "expectedOutput": [
+      { "seller_id": 1, "order_date": "2024-01-01", "price": 100, "running_total": 100 },
+      { "seller_id": 1, "order_date": "2024-01-02", "price": 200, "running_total": 300 }
+    ]
+  },
+  {
+    "id": "qNetflix1",
+    "title": "Total Watch Time Per User",
+    "topic": "Aggregation",
+    "company": "Netflix",
+    "difficulty": "Easy",
+    "xp": 25,
+    "statement": "Return user_id and total watch time.",
+    "hint": "Use SUM(watch_time).",
+    "explanation": "Aggregate watch_time per user.",
+    "concepts": ["SUM", "GROUP BY"],
+    "acceptedAnswers": [
+      "SELECT user_id, SUM(watch_time) AS total_watch_time FROM watch_history GROUP BY user_id"
+    ],
+    "requiredKeywords": ["sum", "group by"],
+    "schema": [
+      "CREATE TABLE watch_history (user_id INTEGER, watch_time INTEGER);"
+    ],
+    "sampleData": {
+      "watch_history": [
+        { "user_id": 1, "watch_time": 30 },
+        { "user_id": 1, "watch_time": 60 }
+      ]
+    },
+    "expectedOutput": [
+      { "user_id": 1, "total_watch_time": 90 }
+    ]
+  },
+  {
+    "id": "qNetflix2",
+    "title": "Most Watched Show",
+    "topic": "Ranking",
+    "company": "Netflix",
+    "difficulty": "Easy",
+    "xp": 25,
+    "statement": "Find the show_id with the highest total watch time.",
+    "concepts": ["RANK"],
+    "acceptedAnswers": [
+      "SELECT show_id FROM (SELECT show_id, SUM(watch_time) AS total, RANK() OVER (ORDER BY SUM(watch_time) DESC) r FROM watch_history GROUP BY show_id) WHERE r = 1"
+    ],
+    "requiredKeywords": ["rank"],
+    "schema": [
+      "CREATE TABLE watch_history (show_id INTEGER, watch_time INTEGER);"
+    ],
+    "sampleData": {
+      "watch_history": [
+        { "show_id": 1, "watch_time": 50 },
+        { "show_id": 2, "watch_time": 100 }
+      ]
+    },
+    "expectedOutput": [
+      { "show_id": 2 }
+    ]
+  },
+  {
+    "id": "qNetflix3",
+    "title": "Users With No Watch Activity",
+    "topic": "JOIN",
+    "company": "Netflix",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Find user_id values who have never watched any content.",
+    "concepts": ["LEFT JOIN"],
+    "acceptedAnswers": [
+      "SELECT u.user_id FROM users u LEFT JOIN watch_history w ON u.user_id = w.user_id WHERE w.user_id IS NULL"
+    ],
+    "requiredKeywords": ["left join"],
+    "schema": [
+      "CREATE TABLE users (user_id INTEGER);",
+      "CREATE TABLE watch_history (user_id INTEGER);"
+    ],
+    "sampleData": {
+      "users": [
+        { "user_id": 1 },
+        { "user_id": 2 }
+      ],
+      "watch_history": [
+        { "user_id": 1 }
+      ]
+    },
+    "expectedOutput": [
+      { "user_id": 2 }
+    ]
+  },
+  {
+    "id": "qNetflix4",
+    "title": "Average Watch Time Per Show",
+    "topic": "Aggregation",
+    "company": "Netflix",
+    "difficulty": "Easy",
+    "xp": 25,
+    "statement": "Return show_id and average watch time.",
+    "concepts": ["AVG"],
+    "acceptedAnswers": [
+      "SELECT show_id, AVG(watch_time) AS avg_watch_time FROM watch_history GROUP BY show_id"
+    ],
+    "requiredKeywords": ["avg"],
+    "schema": [
+      "CREATE TABLE watch_history (show_id INTEGER, watch_time INTEGER);"
+    ],
+    "sampleData": {
+      "watch_history": [
+        { "show_id": 1, "watch_time": 50 },
+        { "show_id": 1, "watch_time": 100 }
+      ]
+    },
+    "expectedOutput": [
+      { "show_id": 1, "avg_watch_time": 75 }
+    ]
+  },
+  {
+    "id": "qNetflix5",
+    "title": "Top Show Per Genre",
+    "topic": "Ranking",
+    "company": "Netflix",
+    "difficulty": "Medium",
+    "xp": 35,
+    "statement": "Return the most watched show per genre.",
+    "concepts": ["ROW_NUMBER"],
+    "acceptedAnswers": [
+      "SELECT genre, show_id FROM (SELECT genre, show_id, ROW_NUMBER() OVER (PARTITION BY genre ORDER BY SUM(watch_time) DESC) rn FROM watch_history GROUP BY genre, show_id) WHERE rn = 1"
+    ],
+    "requiredKeywords": ["row_number"],
+    "schema": [
+      "CREATE TABLE watch_history (genre TEXT, show_id INTEGER, watch_time INTEGER);"
+    ],
+    "sampleData": {
+      "watch_history": [
+        { "genre": "Drama", "show_id": 1, "watch_time": 50 },
+        { "genre": "Drama", "show_id": 2, "watch_time": 100 }
+      ]
+    },
+    "expectedOutput": [
+      { "genre": "Drama", "show_id": 2 }
+    ]
+  },
+  {
+    "id": "qNetflix6",
+    "title": "Shows Above Average Watch Time",
+    "topic": "Subquery",
+    "company": "Netflix",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Find shows whose total watch time is above average.",
+    "concepts": ["SUBQUERY"],
+    "acceptedAnswers": [
+      "SELECT show_id FROM (SELECT show_id, SUM(watch_time) AS total FROM watch_history GROUP BY show_id) WHERE total > (SELECT AVG(total) FROM (SELECT SUM(watch_time) AS total FROM watch_history GROUP BY show_id))"
+    ],
+    "requiredKeywords": ["select"],
+    "schema": [
+      "CREATE TABLE watch_history (show_id INTEGER, watch_time INTEGER);"
+    ],
+    "sampleData": {
+      "watch_history": [
+        { "show_id": 1, "watch_time": 50 },
+        { "show_id": 2, "watch_time": 150 }
+      ]
+    },
+    "expectedOutput": [
+      { "show_id": 2 }
+    ]
+  },
+  {
+    "id": "qNetflix7",
+    "title": "Running Watch Time",
+    "topic": "Window Function",
+    "company": "Netflix",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Compute running watch time per user ordered by date.",
+    "concepts": ["SUM OVER"],
+    "acceptedAnswers": [
+      "SELECT user_id, watch_date, watch_time, SUM(watch_time) OVER (PARTITION BY user_id ORDER BY watch_date) AS running_total FROM watch_history"
+    ],
+    "requiredKeywords": ["over"],
+    "schema": [
+      "CREATE TABLE watch_history (user_id INTEGER, watch_date TEXT, watch_time INTEGER);"
+    ],
+    "sampleData": {
+      "watch_history": [
+        { "user_id": 1, "watch_date": "2024-01-01", "watch_time": 30 },
+        { "user_id": 1, "watch_date": "2024-01-02", "watch_time": 40 }
+      ]
+    },
+    "expectedOutput": [
+      { "user_id": 1, "watch_date": "2024-01-01", "watch_time": 30, "running_total": 30 },
+      { "user_id": 1, "watch_date": "2024-01-02", "watch_time": 40, "running_total": 70 }
+    ]
+  },
+  {
+    "id": "qNetflix8",
+    "title": "Users With Multiple Watch Days",
+    "topic": "Aggregation",
+    "company": "Netflix",
+    "difficulty": "Medium",
+    "xp": 30,
+    "statement": "Find users who watched content on more than 1 distinct day.",
+    "concepts": ["COUNT DISTINCT"],
+    "acceptedAnswers": [
+      "SELECT user_id FROM watch_history GROUP BY user_id HAVING COUNT(DISTINCT watch_date) > 1"
+    ],
+    "requiredKeywords": ["distinct"],
+    "schema": [
+      "CREATE TABLE watch_history (user_id INTEGER, watch_date TEXT);"
+    ],
+    "sampleData": {
+      "watch_history": [
+        { "user_id": 1, "watch_date": "2024-01-01" },
+        { "user_id": 1, "watch_date": "2024-01-02" }
+      ]
+    },
+    "expectedOutput": [
+      { "user_id": 1 }
+    ]
+  },
+  {
+    "id": "qNetflix9",
+    "title": "Top 2 Users by Watch Time",
+    "topic": "Ranking",
+    "company": "Netflix",
+    "difficulty": "Hard",
+    "xp": 40,
+    "statement": "Return top 2 users by total watch time.",
+    "concepts": ["RANK"],
+    "acceptedAnswers": [
+      "SELECT user_id FROM (SELECT user_id, SUM(watch_time) AS total, RANK() OVER (ORDER BY SUM(watch_time) DESC) r FROM watch_history GROUP BY user_id) WHERE r <= 2"
+    ],
+    "requiredKeywords": ["rank"],
+    "schema": [
+      "CREATE TABLE watch_history (user_id INTEGER, watch_time INTEGER);"
+    ],
+    "sampleData": {
+      "watch_history": [
+        { "user_id": 1, "watch_time": 50 },
+        { "user_id": 2, "watch_time": 100 }
+      ]
+    },
+    "expectedOutput": [
+      { "user_id": 2 },
+      { "user_id": 1 }
+    ]
+  }
+]

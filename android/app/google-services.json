@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "856647999156",
+    "project_id": "hire-me-sql-6d7b5",
+    "storage_bucket": "hire-me-sql-6d7b5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:856647999156:android:78332b8b07d271f5bf01e1",
+        "android_client_info": {
+          "package_name": "com.example.hire_me_sql"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBykfrWhrzH2PFo2nuaRIwqf_NYoZHscZs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:856647999156:android:13c9330453ea4e06bf01e1",
+        "android_client_info": {
+          "package_name": "com.thoa.hire_me_sql"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBykfrWhrzH2PFo2nuaRIwqf_NYoZHscZs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
